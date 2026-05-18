@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>REVIEWLY</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-100 text-slate-900">
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="min-h-screen bg-[#070b1a] text-white flex items-center justify-center px-6 overflow-hidden">
+    <div class="absolute inset-0 opacity-30">
+      <div class="absolute top-20 left-20 w-72 h-72 bg-purple-600 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-20 right-20 w-80 h-80 bg-blue-600 rounded-full blur-3xl"></div>
+    </div>
+
+    <section class="relative w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 bg-white/10 border border-white/10 rounded-3xl shadow-2xl overflow-hidden backdrop-blur">
+      <div class="p-10 lg:p-14 bg-[#0b1024]">
+        <div class="flex items-center gap-3 mb-12">
+          <div class="bg-purple-600 text-white w-11 h-11 rounded-xl flex items-center justify-center font-bold">R</div>
+          <div>
+            <h1 class="font-bold text-2xl tracking-wide">REVIEWLY</h1>
+            <p class="text-sm text-slate-400">AI Code Review for Students</p>
+          </div>
+        </div>
+
+        <h2 class="text-4xl font-extrabold leading-tight mb-5">Welcome back to your<br><span class="text-purple-400">code review workspace</span></h2>
+        <p class="text-slate-300 leading-7 mb-10">Log in to upload a GitHub repository, receive Socratic AI feedback, track your analytics, and continue your learning roadmap.</p>
+
+        <div class="grid grid-cols-2 gap-4 text-sm">
+          <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+            <div class="text-2xl mb-2">📊</div>
+            <p class="font-bold">Progress Tracking</p>
+            <p class="text-slate-400 mt-1">Scores and categories</p>
+          </div>
+          <div class="bg-white/10 rounded-2xl p-4 border border-white/10">
+            <div class="text-2xl mb-2">🎓</div>
+            <p class="font-bold">Socratic Review</p>
+            <p class="text-slate-400 mt-1">Learn by answering</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-10 lg:p-14 bg-white text-slate-900">
+        <h2 class="text-3xl font-extrabold mb-2">Sign In</h2>
+        <p class="text-slate-500 mb-8">Use the demo details below to enter the platform.</p>
+
+        <label class="font-bold text-sm">Email Address</label>
+        <input id="loginEmail" type="email" value="student@reviewly.com" class="w-full border rounded-xl px-4 py-3 mt-2 mb-5 bg-slate-50 outline-none focus:ring-2 focus:ring-purple-500" />
+
+        <label class="font-bold text-sm">Password</label>
+        <input id="loginPassword" type="password" value="123456" class="w-full border rounded-xl px-4 py-3 mt-2 mb-4 bg-slate-50 outline-none focus:ring-2 focus:ring-purple-500" onkeydown="if(event.key==='Enter') loginUser()" />
+
+        <div class="flex items-center justify-between text-sm mb-7">
+          <label class="flex items-center gap-2 text-slate-600">
+            <input type="checkbox" checked class="accent-purple-600"> Remember me
+          </label>
+          <button class="text-purple-700 font-bold">Forgot password?</button>
+        </div>
+
+        <button onclick="loginUser()" class="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-xl py-4 font-bold shadow-lg">
+          Login to REVIEWLY
+        </button>
+
+        <div class="relative my-7 text-center text-slate-400 text-sm">
+          <span class="bg-white px-3 relative z-10">or</span>
+          <div class="absolute top-1/2 left-0 right-0 h-px bg-slate-200"></div>
+        </div>
+
+        <button onclick="loginUser()" class="w-full border rounded-xl py-4 font-bold hover:bg-slate-50 flex items-center justify-center gap-3">
+          <span class="text-xl">🐙</span> Continue with GitHub
+        </button>
+
+        <p id="loginMessage" class="text-center text-sm text-slate-500 mt-6">Demo mode: any email and password will work.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- Landing Page -->
+  <div id="landingScreen" class="hidden min-h-screen bg-[#070b1a] text-white overflow-hidden">
+    <header class="max-w-7xl mx-auto px-8 py-6 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="bg-purple-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold">R</div>
+        <div>
+          <h1 class="font-bold text-xl tracking-wide">REVIEWLY</h1>
+          <p class="text-xs text-slate-400">AI Code Review for Students</p>
+        </div>
+      </div>
+
+      <nav class="hidden md:flex gap-8 text-sm text-slate-300 font-semibold">
+        <button onclick="showScreen('homeScreen')" class="hover:text-white">New Review</button>
+        <button onclick="showScreen('analyticsScreen')" class="hover:text-white">Analytics</button>
+        <button onclick="showScreen('learningScreen')" class="hover:text-white">Learning Roadmap</button>
+      </nav>
+
+      <div class="flex gap-3"><button onclick="showScreen('loginScreen')" class="border border-white/20 hover:bg-white/10 px-5 py-2 rounded-xl font-bold">Logout</button><button onclick="showScreen('homeScreen')" class="bg-purple-600 hover:bg-purple-700 px-5 py-2 rounded-xl font-bold">Start Review</button></div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 py-16 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+      <section>
+        <div class="inline-flex items-center gap-2 bg-white/10 border border-white/10 rounded-full px-4 py-2 text-sm text-purple-200 mb-6">
+          ✨ Socratic AI Feedback • 12 Review Categories
+        </div>
+
+        <h2 class="text-5xl md:text-6xl font-extrabold leading-tight mb-6">
+          AI-Powered<br />Code Review for<br />
+          <span class="text-purple-400">Students</span>
+        </h2>
+
+        <p class="text-slate-300 text-lg max-w-xl leading-8 mb-8">
+          Upload your GitHub repository, receive structured feedback, and improve your code through guided questions instead of direct answers.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <button onclick="showScreen('homeScreen')" class="bg-purple-600 hover:bg-purple-700 px-8 py-4 rounded-xl font-bold shadow-lg">Get Started</button>
+          <button onclick="showScreen('analyticsScreen')" class="border border-white/20 hover:bg-white/10 px-8 py-4 rounded-xl font-bold">View Demo Dashboard</button>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12">
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <p class="text-3xl font-bold text-purple-300">12</p>
+            <p class="text-sm text-slate-400">Review Categories</p>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <p class="text-3xl font-bold text-purple-300">3</p>
+            <p class="text-sm text-slate-400">Review Levels</p>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <p class="text-3xl font-bold text-purple-300">AI</p>
+            <p class="text-sm text-slate-400">Guided Learning</p>
+          </div>
+          <div class="bg-white/5 border border-white/10 rounded-2xl p-4">
+            <p class="text-3xl font-bold text-purple-300">PDF</p>
+            <p class="text-sm text-slate-400">Final Report</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="relative">
+        <div class="absolute -top-12 -right-12 w-72 h-72 bg-purple-700 rounded-full blur-3xl opacity-30"></div>
+        <div class="absolute -bottom-12 -left-12 w-72 h-72 bg-blue-700 rounded-full blur-3xl opacity-25"></div>
+
+        <div class="relative bg-[#10172a] border border-white/10 rounded-3xl shadow-2xl p-6">
+          <div class="flex gap-2 mb-5">
+            <span class="w-3 h-3 bg-red-400 rounded-full"></span>
+            <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
+            <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+          </div>
+
+          <div class="bg-[#050816] rounded-2xl p-5 font-mono text-sm leading-7 text-slate-300">
+            <p><span class="text-purple-400">function</span> reviewCode(repo) {</p>
+            <p class="ml-5"><span class="text-blue-400">const</span> issues = analyze(repo);</p>
+            <p class="ml-5"><span class="text-blue-400">return</span> askSocraticQuestions(issues);</p>
+            <p>}</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <div class="bg-purple-600/20 border border-purple-500/30 rounded-2xl p-4">🤖 AI Feedback</div>
+            <div class="bg-blue-600/20 border border-blue-500/30 rounded-2xl p-4">✅ Code Quality</div>
+            <div class="bg-green-600/20 border border-green-500/30 rounded-2xl p-4">📈 Progress</div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Home Screen -->
+  <div id="homeScreen" class="hidden min-h-screen">
+    <header class="bg-white border-b shadow-sm px-10 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showScreen('landingScreen')">
+        <div class="bg-blue-600 text-white w-10 h-10 rounded-xl flex items-center justify-center text-xl font-bold">AI</div>
+        <div>
+          <h1 class="text-xl font-bold text-blue-700">REVIEWLY</h1>
+          <p class="text-sm text-slate-500">AI-Powered Code Analysis</p>
+        </div>
+      </div>
+
+      <nav class="flex gap-8 font-semibold text-sm">
+        <button onclick="showScreen('landingScreen')" class="text-slate-700 hover:text-blue-700">Landing</button>
+        <button onclick="showScreen('analyticsScreen')" class="text-slate-700 hover:text-blue-700">Analytics Dashboard</button>
+        <button onclick="showScreen('learningScreen')" class="text-slate-700 hover:text-blue-700">Learning Roadmap</button>
+      </nav>
+    </header>
+
+    <main class="bg-blue-50 min-h-[520px] py-16">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl font-bold text-blue-700">Initiate New Review</h2>
+        <p class="text-slate-500 mt-2">Start a comprehensive Socratic analysis of your project</p>
+      </div>
+
+      <section class="bg-white max-w-3xl mx-auto rounded-2xl shadow-lg p-8">
+        <label class="font-bold flex items-center gap-2 mb-3">
+          <span class="text-blue-600">⌘</span> GitHub Repository URL
+        </label>
+
+        <input id="githubInput" type="text"
+          value="https://github.com/username/repository"
+          class="w-full border rounded-xl px-4 py-3 mb-7 bg-slate-50" />
+
+        <label class="font-bold flex items-center gap-2 mb-3">
+          <span class="text-blue-600">⇧</span> Project Specification Document
+        </label>
+
+        <div class="border-2 border-dashed rounded-xl bg-slate-50 h-40 flex flex-col justify-center items-center text-center mb-7">
+          <div class="text-5xl text-slate-400 mb-3">⇧</div>
+          <p class="font-bold">Drop your specification file here</p>
+          <p class="text-slate-500 text-sm">or click to browse (PDF, DOC, DOCX)</p>
+        </div>
+
+        <button onclick="launchSession()"
+          class="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-4 font-bold shadow">
+          ✨ Launch Socratic Session
+        </button>
+      </section>
+    </main>
+
+    <section class="max-w-6xl mx-auto py-10">
+      <h2 class="text-2xl font-bold">Recent Activity</h2>
+      <p class="text-slate-500 mb-8">Your latest Socratic review sessions</p>
+      <div id="activityCards" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
+    </section>
+  </div>
+
+  <!-- Review Screen -->
+  <div id="reviewScreen" class="hidden h-screen bg-[#111216] text-white grid grid-cols-[290px_1fr_420px]">
+    <aside class="border-r border-zinc-700 bg-[#18191d] overflow-y-auto">
+      <div class="p-6 border-b border-zinc-700">
+        <h2 class="text-2xl font-bold">Quality Roadmap</h2>
+        <p class="text-zinc-400 mt-2">12 Categories</p>
+      </div>
+      <div id="roadmapList" class="p-4 space-y-4"></div>
+    </aside>
+
+    <main class="bg-[#07080a] overflow-hidden flex flex-col">
+      <div class="h-14 bg-[#18191d] border-b border-zinc-700 flex items-center justify-between">
+        <div class="flex h-full">
+          <div class="px-6 flex items-center bg-[#07080a] border-r border-zinc-700 font-bold">App.tsx</div>
+          <div class="px-6 flex items-center border-r border-zinc-700 text-zinc-400">UserList.tsx</div>
+          <div class="px-6 flex items-center text-zinc-400">api.ts</div>
+        </div>
+        <button onclick="showScreen('homeScreen')" class="px-6 text-zinc-300 hover:text-white">Back</button>
+      </div>
+      <pre class="p-8 text-sm leading-7 overflow-auto flex-1"><code id="codeBlock"></code></pre>
+    </main>
+
+    <aside class="bg-[#18191d] border-l border-zinc-700 flex flex-col">
+      <div class="p-6 border-b border-zinc-700">
+        <h2 class="text-2xl font-bold text-white">🎓 REVIEWLY</h2>
+        <p class="text-zinc-400 mt-2">Learning through questioning</p>
+      </div>
+      <div id="chatArea" class="flex-1 overflow-y-auto p-5 space-y-5"></div>
+      <div class="border-t border-zinc-700 p-4">
+        <div class="flex justify-between mb-2 text-sm">
+          <span class="text-zinc-400">Live Depth Analyzer</span>
+          <span class="text-yellow-400 font-bold">Developing Understanding</span>
+        </div>
+        <div class="h-3 bg-zinc-700 rounded-full mb-5">
+          <div id="progressBar" class="h-3 bg-yellow-400 rounded-full w-2/3"></div>
+        </div>
+        <div class="flex gap-3">
+          <input id="chatInput" type="text" placeholder="Type your answer or question..."
+            class="flex-1 bg-[#2a2b31] border border-zinc-600 rounded-xl px-4 py-3 text-white outline-none" />
+          <button onclick="sendAnswer()" class="bg-zinc-700 hover:bg-blue-600 px-5 rounded-xl text-xl">➤</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Analytics Dashboard -->
+  <div id="analyticsScreen" class="hidden min-h-screen bg-[#0b1020] text-white">
+    <header class="bg-[#11182d] border-b border-white/10 px-10 py-5 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showScreen('landingScreen')">
+        <div class="bg-purple-600 w-10 h-10 rounded-xl flex items-center justify-center font-bold">R</div>
+        <div>
+          <h1 class="font-bold text-xl">REVIEWLY</h1>
+          <p class="text-xs text-slate-400">Analytics Dashboard</p>
+        </div>
+      </div>
+      <nav class="flex gap-5 text-sm font-bold text-slate-300">
+        <button onclick="showScreen('homeScreen')" class="hover:text-white">New Review</button>
+        <button onclick="showScreen('learningScreen')" class="hover:text-white">Learning Roadmap</button>
+      </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 py-10">
+      <div class="flex justify-between items-end mb-8">
+        <div>
+          <h2 class="text-3xl font-extrabold">Dashboard</h2>
+          <p class="text-slate-400 mt-2">Track code quality, completed reviews, and learning progress.</p>
+        </div>
+        <div class="bg-green-500/10 border border-green-400/30 rounded-2xl px-5 py-3 text-green-300 font-bold">Overall Score: 82/100</div>
+      </div>
+
+      <section class="grid grid-cols-1 md:grid-cols-4 gap-5 mb-8">
+        <div class="bg-[#141c33] border border-white/10 rounded-2xl p-6">
+          <p class="text-slate-400 text-sm">Overall Score</p>
+          <p class="text-4xl font-extrabold mt-3">82</p>
+          <p class="text-green-400 text-sm mt-2">+14% from last review</p>
+        </div>
+        <div class="bg-[#141c33] border border-white/10 rounded-2xl p-6">
+          <p class="text-slate-400 text-sm">Reviews Completed</p>
+          <p class="text-4xl font-extrabold mt-3">14</p>
+          <p class="text-slate-400 text-sm mt-2">This semester</p>
+        </div>
+        <div class="bg-[#141c33] border border-white/10 rounded-2xl p-6">
+          <p class="text-slate-400 text-sm">Bugs Found</p>
+          <p class="text-4xl font-extrabold mt-3">37</p>
+          <p class="text-red-300 text-sm mt-2">3 critical issues</p>
+        </div>
+        <div class="bg-[#141c33] border border-white/10 rounded-2xl p-6">
+          <p class="text-slate-400 text-sm">AI Confidence</p>
+          <p class="text-4xl font-extrabold mt-3">91%</p>
+          <p class="text-blue-300 text-sm mt-2">High quality analysis</p>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="lg:col-span-2 bg-[#141c33] border border-white/10 rounded-3xl p-6">
+          <h3 class="font-bold text-xl mb-6">Score Over Time</h3>
+          <div class="h-72 flex items-end gap-4 border-l border-b border-slate-600 px-6 pb-4">
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[35%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[45%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[60%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[55%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[70%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[75%]"></div>
+            <div class="bg-purple-500 rounded-t-lg w-10 h-[82%]"></div>
+          </div>
+        </div>
+
+        <div class="bg-[#141c33] border border-white/10 rounded-3xl p-6">
+          <h3 class="font-bold text-xl mb-6">Category Breakdown</h3>
+          <div class="space-y-5">
+            <div><div class="flex justify-between text-sm mb-2"><span>Code Style</span><span>95%</span></div><div class="h-3 bg-slate-700 rounded-full"><div class="h-3 bg-green-400 rounded-full w-[95%]"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-2"><span>Functions</span><span>80%</span></div><div class="h-3 bg-slate-700 rounded-full"><div class="h-3 bg-blue-400 rounded-full w-[80%]"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-2"><span>Error Handling</span><span>70%</span></div><div class="h-3 bg-slate-700 rounded-full"><div class="h-3 bg-yellow-400 rounded-full w-[70%]"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-2"><span>Memory Management</span><span>58%</span></div><div class="h-3 bg-slate-700 rounded-full"><div class="h-3 bg-red-400 rounded-full w-[58%]"></div></div></div>
+            <div><div class="flex justify-between text-sm mb-2"><span>Documentation</span><span>90%</span></div><div class="h-3 bg-slate-700 rounded-full"><div class="h-3 bg-green-400 rounded-full w-[90%]"></div></div></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Learning Roadmap -->
+  <div id="learningScreen" class="hidden min-h-screen bg-slate-50">
+    <header class="bg-white border-b shadow-sm px-10 py-5 flex justify-between items-center">
+      <div class="flex items-center gap-3 cursor-pointer" onclick="showScreen('landingScreen')">
+        <div class="bg-purple-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-bold">R</div>
+        <div>
+          <h1 class="text-xl font-bold text-purple-700">REVIEWLY</h1>
+          <p class="text-sm text-slate-500">Personal Learning Roadmap</p>
+        </div>
+      </div>
+      <nav class="flex gap-6 text-sm font-bold">
+        <button onclick="showScreen('homeScreen')" class="hover:text-purple-700">New Review</button>
+        <button onclick="showScreen('analyticsScreen')" class="hover:text-purple-700">Analytics</button>
+      </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-8 py-12">
+      <div class="mb-10">
+        <h2 class="text-4xl font-extrabold">Your Learning Path</h2>
+        <p class="text-slate-500 mt-3">Based on your reviews, REVIEWLY recommends focusing on these topics.</p>
+      </div>
+
+      <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-white border rounded-3xl p-6 shadow-sm">
+          <div class="text-green-600 text-3xl mb-4">✓</div>
+          <h3 class="font-bold text-xl">Code Style</h3>
+          <p class="text-slate-500 mt-2">Completed</p>
+        </div>
+        <div class="bg-white border rounded-3xl p-6 shadow-sm">
+          <div class="text-green-600 text-3xl mb-4">✓</div>
+          <h3 class="font-bold text-xl">Functions</h3>
+          <p class="text-slate-500 mt-2">Completed</p>
+        </div>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-3xl p-6 shadow-sm">
+          <div class="text-yellow-600 text-3xl mb-4">!</div>
+          <h3 class="font-bold text-xl">Error Handling</h3>
+          <p class="text-yellow-700 mt-2">In progress</p>
+        </div>
+        <div class="bg-red-50 border border-red-200 rounded-3xl p-6 shadow-sm">
+          <div class="text-red-600 text-3xl mb-4">×</div>
+          <h3 class="font-bold text-xl">Memory Management</h3>
+          <p class="text-red-700 mt-2">Needs work</p>
+        </div>
+        <div class="bg-white border rounded-3xl p-6 shadow-sm">
+          <div class="text-slate-400 text-3xl mb-4">○</div>
+          <h3 class="font-bold text-xl">Design Patterns</h3>
+          <p class="text-slate-500 mt-2">Upcoming</p>
+        </div>
+        <div class="bg-white border rounded-3xl p-6 shadow-sm">
+          <div class="text-slate-400 text-3xl mb-4">○</div>
+          <h3 class="font-bold text-xl">Algorithm Efficiency</h3>
+          <p class="text-slate-500 mt-2">Upcoming</p>
+        </div>
+      </section>
+
+      <section class="bg-white rounded-3xl shadow p-8 border">
+        <h3 class="text-2xl font-bold mb-5">Next Recommended Tasks</h3>
+        <div class="space-y-4">
+          <div class="flex justify-between items-center bg-slate-50 rounded-2xl p-5 border">
+            <div>
+              <h4 class="font-bold">Add stronger error handling</h4>
+              <p class="text-slate-500 text-sm mt-1">Explain what should happen when the API request fails.</p>
+            </div>
+            <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-bold">Medium</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-50 rounded-2xl p-5 border">
+            <div>
+              <h4 class="font-bold">Fix missing dependency array</h4>
+              <p class="text-slate-500 text-sm mt-1">Prevent repeated API calls inside useEffect.</p>
+            </div>
+            <span class="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-bold">Important</span>
+          </div>
+          <div class="flex justify-between items-center bg-slate-50 rounded-2xl p-5 border">
+            <div>
+              <h4 class="font-bold">Document main components</h4>
+              <p class="text-slate-500 text-sm mt-1">Write a short explanation for each main file.</p>
+            </div>
+            <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-bold">Easy</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const activities = [
+      { title: "E-Commerce Platform", date: "April 25, 2026", score: "12/12", progress: "100%" },
+      { title: "Student Management System", date: "April 22, 2026", score: "9/12", progress: "75%" },
+      { title: "Mobile Weather App", date: "April 18, 2026", score: "12/12", progress: "100%" },
+      { title: "Task Tracker API", date: "April 15, 2026", score: "7/12", progress: "58%" }
+    ];
+
+    const roadmap = [
+      { title: "Error Handling", status: "Deep understanding", color: "green", icon: "✓" },
+      { title: "Component Decoupling", status: "Deep understanding", color: "green", icon: "✓" },
+      { title: "State Management", status: "Surface-level only", color: "yellow", icon: "!" },
+      { title: "Performance Optimization", status: "Yet to discuss", color: "gray", icon: "○" },
+      { title: "Type Safety", status: "Deep understanding", color: "green", icon: "✓" },
+      { title: "Code Reusability", status: "Surface-level only", color: "yellow", icon: "!" },
+      { title: "Testing Strategy", status: "Yet to discuss", color: "gray", icon: "○" }
+    ];
+
+    const fakeCode = `import { useState, useEffect } from 'react';
+import { UserList } from './components/UserList';
+import { fetchUsers } from './services/api';
+
+function App() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers()
+      .then(data => {
+        setUsers(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  });
+
+  return (
+    <div className="app">
+      <h1>User Dashboard</h1>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <UserList users={users} />
+      )}
+    </div>
+  );
+}
+
+export default App;`;
+
+
+    function loginUser() {
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value.trim();
+      const message = document.getElementById("loginMessage");
+
+      if (!email || !password) {
+        message.textContent = "Please enter both email and password.";
+        message.className = "text-center text-sm text-red-600 mt-6 font-semibold";
+        return;
+      }
+
+      message.textContent = "Login successful. Redirecting...";
+      message.className = "text-center text-sm text-green-600 mt-6 font-semibold";
+      showScreen("landingScreen");
+    }
+
+    function showScreen(screenId) {
+      const screens = ["loginScreen", "landingScreen", "homeScreen", "reviewScreen", "analyticsScreen", "learningScreen"];
+      screens.forEach(id => document.getElementById(id).classList.add("hidden"));
+      document.getElementById(screenId).classList.remove("hidden");
+    }
+
+    function renderActivities() {
+      const container = document.getElementById("activityCards");
+      container.innerHTML = activities.map(item => `
+        <div class="bg-white rounded-2xl shadow p-6 border">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="font-bold text-lg">${item.title}</h3>
+              <p class="text-slate-500 text-sm mt-3">📅 ${item.date}</p>
+            </div>
+            <div class="w-16 h-16 rounded-full border-8 border-blue-600 flex items-center justify-center text-blue-700 font-bold">
+              ${item.score}
+            </div>
+          </div>
+          <p class="text-sm text-slate-500 mt-5">Depth Indicator</p>
+          <div class="h-2 bg-blue-100 rounded-full mt-2">
+            <div class="h-2 bg-blue-600 rounded-full" style="width:${item.progress}"></div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderRoadmap() {
+      const container = document.getElementById("roadmapList");
+      container.innerHTML = roadmap.map(item => {
+        const colorClass =
+          item.color === "green" ? "text-green-400 border-green-400" :
+          item.color === "yellow" ? "text-yellow-400 border-yellow-400" :
+          "text-zinc-500 border-zinc-500";
+        return `
+          <div class="bg-[#24252a] rounded-xl p-4 flex items-center gap-4">
+            <div class="w-6 h-6 border-2 rounded-full flex items-center justify-center ${colorClass}">${item.icon}</div>
+            <div>
+              <h3 class="font-bold">${item.title}</h3>
+              <p class="text-zinc-500 text-sm mt-1">${item.status}</p>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderCode() {
+      const lines = fakeCode.split("\n");
+      document.getElementById("codeBlock").innerHTML = lines.map((line, index) => {
+        return `<span class="text-green-500 mr-6">${index + 1}</span><span class="text-sky-300">${escapeHtml(line)}</span>`;
+      }).join("\n");
+    }
+
+    function renderChat() {
+      document.getElementById("chatArea").innerHTML = `
+        <div class="flex gap-3">
+          <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center">🎓</div>
+          <div class="bg-[#2a2b31] rounded-xl p-5 max-w-[320px] leading-7">
+            Welcome! I've analyzed the codebase you're reviewing. Let's start with the useEffect hook in App.tsx.
+            I noticed it lacks a dependency array. What would happen if the API call runs on every component re-render?
+            <div class="text-zinc-500 text-sm mt-3">11:21:26</div>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3">
+          <div class="bg-purple-950 border border-purple-700 rounded-xl p-5 max-w-[320px] leading-7">
+            It would call the API every time the component re-renders, which could cause performance issues.
+            <div class="text-zinc-500 text-sm mt-3">11:22:26</div>
+          </div>
+          <div class="bg-purple-600 w-10 h-10 rounded-full flex items-center justify-center font-bold">You</div>
+        </div>
+        <div class="flex gap-3">
+          <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center">🎓</div>
+          <div class="bg-[#2a2b31] rounded-xl p-5 max-w-[320px] leading-7">
+            Good observation! Now think deeper: what specific scenarios would trigger those re-renders?
+          </div>
+        </div>
+      `;
+    }
+
+    function launchSession() {
+      showScreen("reviewScreen");
+      renderRoadmap();
+      renderCode();
+      renderChat();
+    }
+
+    function sendAnswer() {
+      const input = document.getElementById("chatInput");
+      const value = input.value.trim();
+      if (!value) return;
+      const chat = document.getElementById("chatArea");
+      chat.innerHTML += `
+        <div class="flex justify-end gap-3">
+          <div class="bg-purple-950 border border-purple-700 rounded-xl p-5 max-w-[320px] leading-7">${escapeHtml(value)}</div>
+          <div class="bg-purple-600 w-10 h-10 rounded-full flex items-center justify-center font-bold">You</div>
+        </div>
+        <div class="flex gap-3">
+          <div class="bg-blue-600 w-10 h-10 rounded-full flex items-center justify-center">🎓</div>
+          <div class="bg-[#2a2b31] rounded-xl p-5 max-w-[320px] leading-7">
+            Nice answer. Now connect it to the project requirements: how would you fix this issue in the code?
+          </div>
+        </div>
+      `;
+      input.value = "";
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;");
+    }
+
+    renderActivities();
+  </script>
+</body>
+</html>
