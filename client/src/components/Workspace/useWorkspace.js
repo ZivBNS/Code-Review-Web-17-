@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react';
-import { fetchMockTree, fetchMockFile } from '../../services/mockGitHub';
-import { sendMockChatMessage } from '../../services/mockAI';
+import { useParams } from 'react-router-dom';
 
 export default function useWorkspace() {
+  const { projectId } = useParams();
   const [fileTree, setFileTree] = useState([]);
   const [activeFile, setActiveFile] = useState(null);
-  const [fileContent, setFileContent] = useState('');
+  const [fileContent, setFileContent] = useState('// Select a file to view its contents');
   const [selectedLine, setSelectedLine] = useState(null);
-  const [chatMessages, setChatMessages] = useState([
-    { role: 'assistant', content: 'Welcome to the review session. Let\'s start by looking at the App.jsx file. What do you notice?', timestamp: new Date().toISOString() }
-  ]);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [isChatLoading, setIsChatLoading] = useState(false);
   const [checklist, setChecklist] = useState([
     { id: 1, category: 'Security', checked: false },
     { id: 2, category: 'Performance', checked: false },
@@ -26,16 +25,55 @@ export default function useWorkspace() {
   ]);
 
   useEffect(() => {
-    fetchMockTree().then(tree => {
-      setFileTree(tree);
-    });
-  }, []);
+    // Fetch GitHub tree
+    if (projectId) {
+      fetch(`http://localhost:5000/api/projects/${projectId}/github/tree`)
+        .then(res => res.json())
+        .then(tree => {
+          if (Array.isArray(tree)) setFileTree(tree);
+        })
+        .catch(err => console.error("Error fetching file tree:", err));
+    }
+
+    // Fetch chat history
+    if (projectId) {
+      fetch(`http://localhost:5000/api/projects/${projectId}/messages`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.length > 0) {
+            setChatMessages(data);
+          } else {
+            // First time load, save initial bot message
+            const initialMsg = { role: 'assistant', content: "Welcome to the review session. Let's start by looking at the code. What do you notice?" };
+            setChatMessages([initialMsg]);
+            fetch(`http://localhost:5000/api/projects/${projectId}/messages`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(initialMsg)
+            });
+          }
+        })
+        .catch(err => console.error("Error fetching messages:", err));
+    }
+  }, [projectId]);
 
   const handleFileSelect = async (file) => {
     setActiveFile(file.path);
     setSelectedLine(null);
-    const content = await fetchMockFile(file.path);
-    setFileContent(content);
+    setFileContent('// Loading...');
+    
+    try {
+      const response = await fetch(`http://localhost:5000/api/projects/${projectId}/github/file?path=${encodeURIComponent(file.path)}`);
+      if (response.ok) {
+        const content = await response.text();
+        setFileContent(content);
+      } else {
+        setFileContent('// Error loading file content');
+      }
+    } catch (err) {
+      console.error('Error fetching file content:', err);
+      setFileContent('// Error loading file content');
+    }
   };
 
   const handleLineClick = (lineNumber) => {
@@ -43,13 +81,37 @@ export default function useWorkspace() {
   };
 
   const handleSendMessage = async (text) => {
-    if (!text.trim()) return;
+    if (!text.trim() || !projectId) return;
     
-    const userMsg = { role: 'user', content: text, timestamp: new Date().toISOString(), contextLine: selectedLine };
-    setChatMessages(prev => [...prev, userMsg]);
+    const tempUserMsg = { role: 'user', content: text, contextLine: selectedLine, timestamp: new Date().toISOString() };
+    
+    // Optimistic UI update
+    setChatMessages(prev => [...prev, tempUserMsg]);
+    setIsChatLoading(true);
 
-    const botResponse = await sendMockChatMessage(text, selectedLine);
-    setChatMessages(prev => [...prev, botResponse]);
+    try {
+      const response = await fetch(`http://localhost:5000/api/projects/${projectId}/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, contextLine: selectedLine, activeFile })
+      });
+
+      if (response.ok) {
+        const { userMessage, botMessage } = await response.json();
+        // Replace optimistic user message with real one from DB, and append bot message
+        setChatMessages(prev => {
+          const updated = [...prev];
+          updated.pop(); // Remove optimistic
+          return [...updated, userMessage, botMessage];
+        });
+      } else {
+         console.error('Failed to get AI response');
+      }
+    } catch (error) {
+      console.error('Error in chat:', error);
+    } finally {
+      setIsChatLoading(false);
+    }
   };
 
   const toggleChecklistCategory = (id) => {
@@ -66,6 +128,7 @@ export default function useWorkspace() {
     handleFileSelect,
     handleLineClick,
     handleSendMessage,
-    toggleChecklistCategory
+    toggleChecklistCategory,
+    isChatLoading
   };
 }

@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Code2 } from 'lucide-react';
+import { Send, Bot, User, Code2, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function AIChat({ messages, onSendMessage, selectedLine, activeFile }) {
+export default function AIChat({ messages, onSendMessage, selectedLine, activeFile, isLoading }) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
@@ -49,6 +49,25 @@ export default function AIChat({ messages, onSendMessage, selectedLine, activeFi
             </div>
           </motion.div>
         ))}
+        
+        {isLoading && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex gap-3"
+          >
+            <div className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 bg-blue-500/20 text-blue-500">
+              <Bot className="w-5 h-5" />
+            </div>
+            <div className="flex flex-col max-w-[75%] items-start">
+              <div className="p-3 rounded-2xl text-sm bg-muted text-foreground rounded-tl-sm flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="text-muted-foreground animate-pulse">Socratic AI is thinking...</span>
+              </div>
+            </div>
+          </motion.div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 

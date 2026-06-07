@@ -7,8 +7,8 @@ import LecturerDashboardContainer from './components/LecturerDashboard/LecturerD
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
-        <header className="border-b border-border p-4 flex justify-between items-center bg-card">
+      <div className="h-screen w-screen overflow-hidden bg-background text-foreground flex flex-col">
+        <header className="border-b border-border p-4 flex justify-between items-center bg-card shrink-0">
           <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
             Reviewly - Socratic Code Review
           </h1>
@@ -17,7 +17,7 @@ function App() {
           <Routes>
             <Route path="/" element={<LoginContainer />} />
             <Route path="/upload" element={<ProjectUploadContainer />} />
-            <Route path="/workspace" element={<WorkspaceContainer />} />
+            <Route path="/workspace/:projectId" element={<WorkspaceContainer />} />
             <Route path="/dashboard" element={<LecturerDashboardContainer />} />
           </Routes>
         </main>

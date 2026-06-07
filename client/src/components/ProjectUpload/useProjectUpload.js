@@ -14,16 +14,35 @@ export default function useProjectUpload() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!githubUrl || !requirementsDoc) return;
     
     setIsLoading(true);
-    // Simulate API call and validation
-    setTimeout(() => {
+    try {
+      const formData = new FormData();
+      formData.append('githubUrl', githubUrl);
+      formData.append('requirementsDoc', requirementsDoc);
+
+      const response = await fetch('http://localhost:5000/api/projects/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload project');
+      }
+
+      const data = await response.json();
+      console.log('Project uploaded:', data);
+      
+      navigate(`/workspace/${data.projectId}`);
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Upload failed. Is the server running?');
+    } finally {
       setIsLoading(false);
-      navigate('/workspace');
-    }, 1500);
+    }
   };
 
   return {

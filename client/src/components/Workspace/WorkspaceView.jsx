@@ -60,6 +60,7 @@ export default function WorkspaceView(props) {
               onSendMessage={props.handleSendMessage}
               selectedLine={props.selectedLine}
               activeFile={props.activeFile}
+              isLoading={props.isChatLoading}
             />
           ) : (
             <Checklist
